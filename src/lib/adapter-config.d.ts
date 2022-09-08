@@ -9,6 +9,7 @@ declare global {
             Password: string;
             apiRefreshInterval: number;
 		}
+        reolinkApiClient: any;
 	}
 
     reolinkApiClient: any;
