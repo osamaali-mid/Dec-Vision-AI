@@ -26,7 +26,6 @@ class Reolink810a extends utils.Adapter {
       ...options,
       name: "reolink-810a"
     });
-    this.reolinkApiClient = null;
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
@@ -79,4 +78,5 @@ if (require.main !== module) {
 } else {
   (() => new Reolink810a())();
 }
+let reolinkApiClient = null;
 //# sourceMappingURL=main.js.map

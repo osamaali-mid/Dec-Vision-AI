@@ -8,7 +8,6 @@ declare global {
 			Username: string;
             Password: string;
             apiRefreshInterval: number;
-            reolinkApiClient;
 		}
 	}
 }
