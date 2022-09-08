@@ -32,7 +32,8 @@ class Reolink810a extends utils.Adapter {
 		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 	}
-
+    
+    public reolinkApiClient : any;
     
 
 	/**

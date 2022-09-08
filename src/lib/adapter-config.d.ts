@@ -9,10 +9,10 @@ declare global {
             Password: string;
             apiRefreshInterval: number;
 		}
-        reolinkApiClient: any;
+        // declare reolinkApiClient: any;
 	}
 
-    reolinkApiClient: any;
+    // declare let reolinkApiClient:any;
 }
 
 // this is required so the above AdapterConfig is found by TypeScript / type checking
