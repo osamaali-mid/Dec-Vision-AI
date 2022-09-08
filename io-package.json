@@ -78,8 +78,10 @@
 		]
 	},
 	"native": {
-		"option1": true,
-		"option2": "42"
+		"Hostname": "",
+		"Username": "",
+        "Password": "",
+        "apiRefreshInterval": "500"
 	},
 	"objects": [],
 	"instanceObjects": [
