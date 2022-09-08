@@ -11,7 +11,11 @@ const https = require("https");
 // Load your modules here, e.g.:
 // import * as fs from "fs";
 
+
+
 class Reolink810a extends utils.Adapter {
+
+    
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -19,15 +23,17 @@ class Reolink810a extends utils.Adapter {
 			name: 'reolink-810a',
 		});
 
-        this.reolinkApiClient = null;
-
         
+
+
 		this.on('ready', this.onReady.bind(this));
 		this.on('stateChange', this.onStateChange.bind(this));
 		// this.on('objectChange', this.onObjectChange.bind(this));
 		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 	}
+
+    
 
 	/**
 	 * Is called when databases are connected and adapter received configuration.
@@ -199,3 +205,6 @@ if (require.main !== module) {
 	// otherwise start the instance directly
 	(() => new Reolink810a())();
 }
+
+
+
