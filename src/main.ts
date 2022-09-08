@@ -150,7 +150,7 @@ class Reolink810a extends utils.Adapter {
 if (require.main !== module) {
 	// Export the constructor in compact mode
 	// module.exports = (options: Partial<utils.AdapterOptions> | undefined) => new Reolink810a(options);
-    module.exports = (options) => new Reolink810a(options);
+    module.exports = (options : any) => new Reolink810a(options);
 } else {
 	// otherwise start the instance directly
 	(() => new Reolink810a())();
