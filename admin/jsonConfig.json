@@ -1,16 +1,46 @@
 {
-	"i18n": true,
-	"type": "panel",
-	"items": {
-		"option1": {
-			"type": "checkbox",
-			"label": "option1",
-			"newLine": true
-		},
-		"option2": {
-			"type": "text",
-			"label": "option2",
-			"newLine": true
-		}
-	}
+    "i18n": true,
+    "type": "tabs",
+    "items": {
+        "_options": {
+            "type": "panel",
+            "label": "Kamera Typ",
+            "items": {
+                "Hostname": {
+                    "type": "text",
+                    "label": "IP / Hostname der Kamera",
+                    "newLine": true
+                },
+                "Username": {
+                    "type": "text",
+                    "label": "Username",
+                    "newLine": true
+                }
+                ,
+                "Password": {
+                    "type": "password",
+                    "label": "Password",
+                    "newLine": true,
+                    "visible": false
+                }
+            }
+        },
+        "_advanced": {
+            "type": "panel",
+            "label": "Erweitert",
+            "items": {
+                "apiRefreshInterval": {
+                    "type": "number",
+                    "min": 100,
+                    "max": 1200000,
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 6,
+                    "label": "Abfragezyklus der Kamera",
+                    "help": "in Millisekunden",
+                    "default": 250
+                }
+            }
+        }
+    }
 }
