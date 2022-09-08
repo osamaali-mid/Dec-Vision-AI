@@ -33,9 +33,30 @@ class Reolink810a extends utils.Adapter {
   async onReady() {
     this.setState("info.connection", false, true);
     if (!this.config.Hostname) {
-      this.log.error("Hostname not set - please check instance!");
+      this.log.error("Hostname not (yet )set - please check Settings!");
       return;
     }
+    if (!this.config.Username) {
+      this.log.error("Username not (yet )set - please check Settings!");
+      return;
+    }
+    if (!this.config.Password) {
+      this.log.error("Password not (yet )set - please check Settings!");
+      return;
+    }
+    if (!this.config.apiRefreshInterval) {
+      this.log.error("apiRefreshInterval not (yet )set - please check Settings!");
+      return;
+    }
+    this.reolinkApiClient = axios.create({
+      baseURL: `https://${this.config.cameraIp}`,
+      timeout: 4e3,
+      responseType: "json",
+      responseEncoding: "binary",
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false
+      })
+    });
   }
   onUnload(callback) {
     try {
