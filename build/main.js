@@ -78,5 +78,4 @@ if (require.main !== module) {
 } else {
   (() => new Reolink810a())();
 }
-let reolinkApiClient = null;
 //# sourceMappingURL=main.js.map

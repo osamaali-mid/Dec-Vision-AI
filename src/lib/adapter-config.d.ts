@@ -10,6 +10,8 @@ declare global {
             apiRefreshInterval: number;
 		}
 	}
+
+    reolinkApiClient: any;
 }
 
 // this is required so the above AdapterConfig is found by TypeScript / type checking
