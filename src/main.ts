@@ -5,6 +5,8 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
+const axios = require("axios").default;
+const https = require("https");
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -31,6 +33,16 @@ class Reolink810a extends utils.Adapter {
 
 		// Reset the connection indicator during startup
 		this.setState('info.connection', false, true);
+
+
+
+        if (!this.config.Hostname) {
+			this.log.error("Hostname not set - please check instance!");
+			return;
+		}
+
+
+
 
         
 		// The adapters config (in the instance object everything under the attribute "native") is accessible via
