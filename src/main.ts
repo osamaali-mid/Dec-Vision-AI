@@ -57,7 +57,7 @@ class Reolink810a extends utils.Adapter {
 		}
 
         this.reolinkApiClient = axios.create({
-			baseURL: `https://${this.config.cameraIp}`,
+			baseURL: `https://${this.config.Hostname}`,
 			timeout: 4000,
 			responseType: "json",
 			responseEncoding: "binary",
