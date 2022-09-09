@@ -106,18 +106,5 @@
 			},
 			"native": {}
 		}
-        ,
-		{
-			"_id": "Device.DiskNum",
-			"type": "state",
-			"common": {
-				"role": "value",
-				"name": "",
-				"type": "boolean",
-				"read": true,
-				"write": false
-			},
-			"native": {}
-		}
 	]
 }
