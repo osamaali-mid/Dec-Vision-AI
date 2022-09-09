@@ -32,7 +32,7 @@ class Reolink810a extends utils.Adapter {
     this.on("unload", this.onUnload.bind(this));
   }
   async onReady() {
-    this.setState("info.connection", false, true);
+    this.announceOffline();
     if (!this.config.Hostname) {
       this.log.error("Hostname not (yet) set - please check Settings!");
       return;
@@ -425,7 +425,7 @@ class Reolink810a extends utils.Adapter {
     this.getDevinfo();
     this.getLocalLink();
     if (this.config.PollMD || this.config.PollAI) {
-      this.pollTimer = this.setInterval(this.pollSensors, 1e3, this);
+      this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
     }
   }
   async pollSensors(classInstance) {

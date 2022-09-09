@@ -17,7 +17,6 @@ class Reolink810a extends utils.Adapter {
 
     
     private reolinkApiClient : any = null;
-    // public pollTimer : ReturnType<typeof this.setTimeout>;
     public pollTimer : any;
 
     
@@ -42,13 +41,10 @@ class Reolink810a extends utils.Adapter {
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
-	private async onReady(): Promise<void> {
-		// Initialize your adapter here
+	private async onReady(): Promise<void>
+    {
 
-		// Reset the connection indicator during startup
-		this.setState('info.connection', false, true);
-
-
+        this.announceOffline();
 
         if (!this.config.Hostname) {
 			this.log.error("Hostname not (yet) set - please check Settings!");
@@ -484,15 +480,12 @@ class Reolink810a extends utils.Adapter {
 
         this.getDevinfo();
         this.getLocalLink();
-        // this.getMdState();
-        // this.getAiState();
 
 
 
         if (this.config.PollMD || this.config.PollAI)
         {
-			// this.pollTimer = setInterval(this.pollSensors, this.config.apiRefreshInterval);
-            this.pollTimer = this.setInterval(this.pollSensors, 1000, this);
+            this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
 		}
 	}
 
@@ -551,17 +544,16 @@ class Reolink810a extends utils.Adapter {
                 if(DevInfoValues.status === 200)
                 {
                     this.announceOnline();
-                    
                     const DevValues = DevInfoValues.data[0];
                     await this.setStateAsync("Device.BuildDay", {val: DevValues.value.DevInfo.buildDay, ack: true});
-                    await this.setStateAsync("Device.CfgVer", {val: DevValues.value.DevInfo.cfgVer, ack: true});
-                    await this.setStateAsync("Device.Detail", {val: DevValues.value.DevInfo.detail, ack: true});
-                    await this.setStateAsync("Device.DiskNum", {val: DevValues.value.DevInfo.diskNum, ack: true});
-                    await this.setStateAsync("Device.FirmVer", {val: DevValues.value.DevInfo.firmVer, ack: true});
-                    await this.setStateAsync("Device.Model", {val: DevValues.value.DevInfo.model, ack: true});
-                    await this.setStateAsync("Device.Name", {val: DevValues.value.DevInfo.name, ack: true});
-                    await this.setStateAsync("Device.Serial", {val: DevValues.value.DevInfo.serial, ack: true});
-                    await this.setStateAsync("Device.Wifi", {val: DevValues.value.DevInfo.wifi, ack: true});
+                    await this.setStateAsync("Device.CfgVer",   {val: DevValues.value.DevInfo.cfgVer,   ack: true});
+                    await this.setStateAsync("Device.Detail",   {val: DevValues.value.DevInfo.detail,   ack: true});
+                    await this.setStateAsync("Device.DiskNum",  {val: DevValues.value.DevInfo.diskNum,  ack: true});
+                    await this.setStateAsync("Device.FirmVer",  {val: DevValues.value.DevInfo.firmVer,  ack: true});
+                    await this.setStateAsync("Device.Model",    {val: DevValues.value.DevInfo.model,    ack: true});
+                    await this.setStateAsync("Device.Name",     {val: DevValues.value.DevInfo.name,     ack: true});
+                    await this.setStateAsync("Device.Serial",   {val: DevValues.value.DevInfo.serial,   ack: true});
+                    await this.setStateAsync("Device.Wifi",     {val: DevValues.value.DevInfo.wifi,     ack: true});
                 }
 
             } catch (error:any)
@@ -690,17 +682,11 @@ class Reolink810a extends utils.Adapter {
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
 	 */
-	private onUnload(callback: () => void): void {
-		try {
-			// Here you must clear all timeouts or intervals that may still be active
-			// clearTimeout(timeout1);
-			// clearTimeout(timeout2);
-			// ...
-			// clearInterval(interval1);
-
-
+	private onUnload(callback: () => void): void
+    {
+		try
+        {
             clearInterval(this.pollTimer);
-
 			callback();
 		} catch (e) {
 			callback();
@@ -757,7 +743,6 @@ class Reolink810a extends utils.Adapter {
 if (require.main !== module) {
 	// Export the constructor in compact mode
 	module.exports = (options: Partial<utils.AdapterOptions> | undefined) => new Reolink810a(options);
-    // module.exports = (options : any) => new Reolink810a(options);
 } else {
 	// otherwise start the instance directly
 	(() => new Reolink810a())();
