@@ -35,6 +35,8 @@ class Reolink810a extends utils.Adapter {
   }
   async onReady() {
     this.announceOffline();
+    this.announceOnline();
+    return;
     if (!this.config.Hostname) {
       this.log.error("Hostname not (yet) set - please check Settings!");
       return;
