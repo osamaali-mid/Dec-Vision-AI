@@ -105,6 +105,223 @@
 				"def": false
 			},
 			"native": {}
-		}
+		},
+        {
+            "_id": "Device",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Information from Device",
+                    "de": "Informationen vom Gerät",
+                    "ru": "Информация от устройства",
+                    "pt": "InformaÃ§Ã£o do Dispositivo",
+                    "nl": "Informatie van Device",
+                    "fr": "Information de l'appareil",
+                    "it": "Informazioni da Dispositivo",
+                    "es": "Información del dispositivo",
+                    "pl": "Informacja o Device",
+                    "zh-cn": "从Devic收到的资料"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "Device.Model",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera model",
+                    "de": "Kameramodell",
+                    "ru": "Модель камеры",
+                    "pt": "Modelo de câmera",
+                    "nl": "Camera model",
+                    "fr": "Modèle de caméra",
+                    "it": "Modello di fotocamera",
+                    "es": "Modelo de cámara",
+                    "pl": "Model Camera",
+                    "zh-cn": "2. Camera模型"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.BuildDay",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera buildDay",
+                    "de": "Kameraaufbau Tag",
+                    "ru": "Создание камеры День",
+                    "pt": "Construção de câmera Dia",
+                    "nl": "Camera bouwt Dag",
+                    "fr": "Camera build Jour",
+                    "it": "Costruzione della macchina fotografica Giorno",
+                    "es": "Cámara Día",
+                    "pl": "Kamera Dzień",
+                    "zh-cn": "Camera大楼 日 日"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.CfgVer",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera cfgVer",
+                    "de": "Kamera cfg",
+                    "ru": "Камера cfg",
+                    "pt": "Câmera cfg",
+                    "nl": "Camera cfg",
+                    "fr": "Caméra cfg",
+                    "it": "Macchina fotografica cfg",
+                    "es": "Cámara cfg",
+                    "pl": "Camera cfg.",
+                    "zh-cn": "Camera cfg"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.Detail",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera detail",
+                    "de": "Kamera Detail",
+                    "ru": "Деталь камеры",
+                    "pt": "Detalhes da câmera",
+                    "nl": "Camera detail",
+                    "fr": "Détail de la caméra",
+                    "it": "Dettaglio della fotocamera",
+                    "es": "Detalles de la cámara",
+                    "pl": "Szczegół",
+                    "zh-cn": "Camera详细情况"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.DiskNum",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera diskNum",
+                    "de": "Kamera HDDAnz",
+                    "ru": "Диск камерыNum",
+                    "pt": "Disco da câmeraNum",
+                    "nl": "Camera DiskNum",
+                    "fr": "Disque de caméraNum",
+                    "it": "Fotocamera discoNum",
+                    "es": "Disco de cámaraNum",
+                    "pl": "Camera discNum",
+                    "zh-cn": "Camera dikNum"
+                },
+                "type": "number",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.FirmVer",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera firmVer",
+                    "de": "Kamera Firmware Version",
+                    "ru": "Камера фирма Вер",
+                    "pt": "Empresa de câmera Ver",
+                    "nl": "Camera firma Ver",
+                    "fr": "Camera firm Ver",
+                    "it": "Azienda di macchine fotografiche Ver",
+                    "es": "Firma de cámara Ver",
+                    "pl": "Firma Camera Wiersze",
+                    "zh-cn": "Camera公司 附 件"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.Name",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera name",
+                    "de": "Kameraname",
+                    "ru": "Название камеры",
+                    "pt": "Nome da câmara",
+                    "nl": "Camera naam",
+                    "fr": "Nom de la caméra",
+                    "it": "Nome della macchina",
+                    "es": "Nombre de cámara",
+                    "pl": "Camera",
+                    "zh-cn": "Camera姓名"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.Serial",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera serial",
+                    "de": "Kamera ID",
+                    "ru": "Серия камеры",
+                    "pt": "Série da câmera",
+                    "nl": "Camera serie",
+                    "fr": "Caméra série",
+                    "it": "Fotocamera seriale",
+                    "es": "Cámara serie",
+                    "pl": "Seriali Camera",
+                    "zh-cn": "Cameraserial"
+                },
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "Device.Wifi",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": {
+                    "en": "Camera wifi",
+                    "de": "Kamera Wifi",
+                    "ru": "Камера wifi",
+                    "pt": "Câmera wifi",
+                    "nl": "Camera Wifi",
+                    "fr": "Caméra wifi",
+                    "it": "Camera wifi",
+                    "es": "Cámara wifi",
+                    "pl": "Camera",
+                    "zh-cn": "Camerawifi"
+                },
+                "type": "number",
+                "read": true,
+                "write": false
+            }
+        }
 	]
 }

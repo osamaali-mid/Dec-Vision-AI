@@ -155,16 +155,24 @@ class Reolink810a extends utils.Adapter {
     private async getDevinfo() {
 
         if (this.reolinkApiClient) {
+
+
+            this.log.debug('getDevinfo() was called');
+
+
+
             try {
                 const DevInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetDevInfo&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
                 this.log.debug(`camMdStateInfo ${JSON.stringify(DevInfoValues.status)}: ${JSON.stringify(DevInfoValues.data)}`);
 
-                if(DevInfoValues.status === 200){
+                if(DevInfoValues.status === 200)
+                {
+                    await this.setStateAsync('info.connection', { ack: true, val: true });
                     this.apiConnected = true;
-                    // await this.setStateAsync("Network.Connected", {val: this.apiConnected, ack: true});
+                    await this.setStateAsync("Network.Connected", {val: this.apiConnected, ack: true});
                     const DevValues = DevInfoValues.data[0];
 
-                    /*
+                    // /*
                     await this.setStateAsync("Device.BuildDay", {val: DevValues.value.DevInfo.buildDay, ack: true});
                     await this.setStateAsync("Device.CfgVer", {val: DevValues.value.DevInfo.cfgVer, ack: true});
                     await this.setStateAsync("Device.Detail", {val: DevValues.value.DevInfo.detail, ack: true});
@@ -174,7 +182,7 @@ class Reolink810a extends utils.Adapter {
                     await this.setStateAsync("Device.Name", {val: DevValues.value.DevInfo.name, ack: true});
                     await this.setStateAsync("Device.Serial", {val: DevValues.value.DevInfo.serial, ack: true});
                     await this.setStateAsync("Device.Wifi", {val: DevValues.value.DevInfo.wifi, ack: true});
-                    */
+                    // */
                     
                 }
 
