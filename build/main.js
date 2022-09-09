@@ -29,6 +29,8 @@ class Reolink810a extends utils.Adapter {
     this.reolinkApiClient = null;
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
+    this.on("objectChange", this.onObjectChange.bind(this));
+    this.on("message", this.onMessage.bind(this));
     this.on("unload", this.onUnload.bind(this));
   }
   async onReady() {
@@ -527,10 +529,18 @@ class Reolink810a extends utils.Adapter {
   }
   onUnload(callback) {
     try {
+      this.announceOffline();
       clearInterval(this.pollTimer);
       callback();
     } catch (e) {
       callback();
+    }
+  }
+  onObjectChange(id, obj) {
+    if (obj) {
+      this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+    } else {
+      this.log.info(`object ${id} deleted`);
     }
   }
   onStateChange(id, state) {
@@ -538,6 +548,15 @@ class Reolink810a extends utils.Adapter {
       this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
     } else {
       this.log.info(`state ${id} deleted`);
+    }
+  }
+  onMessage(obj) {
+    if (typeof obj === "object" && obj.message) {
+      if (obj.command === "send") {
+        this.log.info("send command");
+        if (obj.callback)
+          this.sendTo(obj.from, obj.command, "Message received", obj.callback);
+      }
     }
   }
 }
