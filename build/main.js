@@ -27,7 +27,6 @@ class Reolink810a extends utils.Adapter {
       name: "reolink-810a"
     });
     this.reolinkApiClient = null;
-    this.apiConnected = false;
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
@@ -35,19 +34,19 @@ class Reolink810a extends utils.Adapter {
   async onReady() {
     this.setState("info.connection", false, true);
     if (!this.config.Hostname) {
-      this.log.error("Hostname not (yet )set - please check Settings!");
+      this.log.error("Hostname not (yet) set - please check Settings!");
       return;
     }
     if (!this.config.Username) {
-      this.log.error("Username not (yet )set - please check Settings!");
+      this.log.error("Username not (yet) set - please check Settings!");
       return;
     }
     if (!this.config.Password) {
-      this.log.error("Password not (yet )set - please check Settings!");
+      this.log.error("Password not (yet) set - please check Settings!");
       return;
     }
     if (!this.config.apiRefreshInterval) {
-      this.log.error("apiRefreshInterval not (yet )set - please check Settings!");
+      this.log.error("Refresh Interval for Motion Detection not (yet) set - please check Settings!");
       return;
     }
     this.reolinkApiClient = axios.create({
@@ -59,18 +58,396 @@ class Reolink810a extends utils.Adapter {
         rejectUnauthorized: false
       })
     });
+    await this.setObjectNotExistsAsync("Device", {
+      type: "channel",
+      common: {
+        name: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.Model", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.BuildDay", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.CfgVer", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.Detail", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.DiskNum", {
+      type: "state",
+      common: {
+        name: "",
+        type: "number",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.FirmVer", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.Name", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.Serial", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Device.Wifi", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network", {
+      type: "channel",
+      common: {
+        name: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.ActiveLink", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.Connected", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.DNS-Auto", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.DNS-Server01", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false,
+        def: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.DNS-Server02", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false,
+        def: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.MAC", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false,
+        def: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.Gateway", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false,
+        def: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.IP", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false,
+        def: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.Mask", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false,
+        def: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Network.Type", {
+      type: "state",
+      common: {
+        name: "",
+        type: "string",
+        role: "value",
+        read: true,
+        write: false,
+        def: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors", {
+      type: "channel",
+      common: {
+        name: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.MotionDetected", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.DogCat", {
+      type: "channel",
+      common: {
+        name: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.DogCat.Detected", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.DogCat.Supported", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.Face", {
+      type: "channel",
+      common: {
+        name: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.Face.Detected", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.Face.Supported", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.People", {
+      type: "channel",
+      common: {
+        name: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.People.Detected", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.People.Supported", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.Vehicle", {
+      type: "channel",
+      common: {
+        name: ""
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.Vehicle.Detected", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setObjectNotExistsAsync("Sensors.Vehicle.Supported", {
+      type: "state",
+      common: {
+        name: "",
+        type: "boolean",
+        role: "value",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
     this.getDevinfo();
+    this.getLocalLink();
+    if (this.config.PollMD || this.config.PollAI) {
+      this.pollTimer = this.setInterval(this.pollSensors, 1e3, this);
+    }
+  }
+  async pollSensors(classInstance) {
+    if (classInstance.config.PollMD)
+      classInstance.getMdState();
+    if (classInstance.config.PollAI)
+      classInstance.getAiState();
+  }
+  async announceOffline() {
+    await this.setStateAsync("info.connection", { val: false, ack: true });
+    await this.setStateAsync("Network.Connected", { val: false, ack: true });
+  }
+  async announceOnline() {
+    await this.setStateAsync("info.connection", { val: true, ack: true });
+    await this.setStateAsync("Network.Connected", { val: true, ack: true });
   }
   async getDevinfo() {
     if (this.reolinkApiClient) {
-      this.log.debug("getDevinfo() was called");
       try {
         const DevInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetDevInfo&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
-        this.log.debug(`camMdStateInfo ${JSON.stringify(DevInfoValues.status)}: ${JSON.stringify(DevInfoValues.data)}`);
         if (DevInfoValues.status === 200) {
-          await this.setStateAsync("info.connection", { ack: true, val: true });
-          this.apiConnected = true;
-          await this.setStateAsync("Network.Connected", { val: this.apiConnected, ack: true });
+          this.announceOnline();
           const DevValues = DevInfoValues.data[0];
           await this.setStateAsync("Device.BuildDay", { val: DevValues.value.DevInfo.buildDay, ack: true });
           await this.setStateAsync("Device.CfgVer", { val: DevValues.value.DevInfo.cfgVer, ack: true });
@@ -83,14 +460,74 @@ class Reolink810a extends utils.Adapter {
           await this.setStateAsync("Device.Wifi", { val: DevValues.value.DevInfo.wifi, ack: true });
         }
       } catch (error) {
-        this.apiConnected = false;
-        await this.setStateAsync("Network.Connected", { val: this.apiConnected, ack: true });
+        this.announceOffline();
+        this.log.error(error);
+      }
+    }
+  }
+  async getLocalLink() {
+    if (this.reolinkApiClient) {
+      try {
+        const LinkInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetLocalLink&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+        if (LinkInfoValues.status === 200) {
+          this.announceOnline();
+          const LinkValues = LinkInfoValues.data[0];
+          await this.setStateAsync("Network.ActiveLink", { val: LinkValues.value.LocalLink.activeLink, ack: true });
+          await this.setStateAsync("Network.DNS-Auto", { val: LinkValues.value.LocalLink.dns.auto, ack: true });
+          await this.setStateAsync("Network.DNS-Server01", { val: LinkValues.value.LocalLink.dns.dns1, ack: true });
+          await this.setStateAsync("Network.DNS-Server02", { val: LinkValues.value.LocalLink.dns.dns2, ack: true });
+          await this.setStateAsync("Network.MAC", { val: LinkValues.value.LocalLink.mac, ack: true });
+          await this.setStateAsync("Network.Gateway", { val: LinkValues.value.LocalLink.static.gateway, ack: true });
+          await this.setStateAsync("Network.IP", { val: LinkValues.value.LocalLink.static.ip, ack: true });
+          await this.setStateAsync("Network.Mask", { val: LinkValues.value.LocalLink.static.mask, ack: true });
+          await this.setStateAsync("Network.Type", { val: LinkValues.value.LocalLink.type, ack: true });
+        }
+      } catch (error) {
+        this.announceOffline();
+        this.log.error(error);
+      }
+    }
+  }
+  async getMdState() {
+    if (this.reolinkApiClient && this.config.PollMD) {
+      try {
+        const MdInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetMdState&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+        if (MdInfoValues.status === 200) {
+          this.announceOnline();
+          const MdValues = MdInfoValues.data[0];
+          await this.setStateAsync("Sensors.MotionDetected", { val: MdValues.value.state === 1, ack: true });
+        }
+      } catch (error) {
+        this.announceOffline();
+        this.log.error(error);
+      }
+    }
+  }
+  async getAiState() {
+    if (this.reolinkApiClient && this.config.PollAI) {
+      try {
+        const AiInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetAiState&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+        if (AiInfoValues.status === 200) {
+          this.announceOnline();
+          const AiValues = AiInfoValues.data[0];
+          await this.setStateAsync("Sensors.DogCat.Detected", { val: AiValues.value.dog_cat.alarm_state === 1, ack: true });
+          await this.setStateAsync("Sensors.DogCat.Supported", { val: AiValues.value.dog_cat.support === 1, ack: true });
+          await this.setStateAsync("Sensors.Face.Detected", { val: AiValues.value.face.alarm_state === 1, ack: true });
+          await this.setStateAsync("Sensors.Face.Supported", { val: AiValues.value.face.support === 1, ack: true });
+          await this.setStateAsync("Sensors.People.Detected", { val: AiValues.value.people.alarm_state === 1, ack: true });
+          await this.setStateAsync("Sensors.People.Supported", { val: AiValues.value.people.support === 1, ack: true });
+          await this.setStateAsync("Sensors.Vehicle.Detected", { val: AiValues.value.vehicle.alarm_state === 1, ack: true });
+          await this.setStateAsync("Sensors.Vehicle.Supported", { val: AiValues.value.vehicle.support === 1, ack: true });
+        }
+      } catch (error) {
+        this.announceOffline();
         this.log.error(error);
       }
     }
   }
   onUnload(callback) {
     try {
+      clearInterval(this.pollTimer);
       callback();
     } catch (e) {
       callback();

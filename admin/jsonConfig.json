@@ -4,7 +4,7 @@
     "items": {
         "_options": {
             "type": "panel",
-            "label": "Webcam",
+            "label": "Camera",
             "items": {
                 "Hostname": {
                     "type": "text",
@@ -15,8 +15,7 @@
                     "type": "text",
                     "label": "Username",
                     "newLine": true
-                }
-                ,
+                },
                 "Password": {
                     "type": "password",
                     "label": "Password",
@@ -25,20 +24,28 @@
                 }
             }
         },
-        "_advanced": {
+        "_SensorDetection": {
             "type": "panel",
-            "label": "Erweitert",
+            "label": "Sensor Detection",
             "items": {
+                "PollMD": {
+                    "type": "checkbox",
+                    "label": "Use Motion Detection",
+                    "newLine": true
+                },
+                "PollAI": {
+                    "type": "checkbox",
+                    "label": "Use AI Detection",
+                    "newLine": true
+                },
                 "apiRefreshInterval": {
                     "type": "number",
                     "min": 100,
                     "max": 1200000,
-                    "sm": 6,
-                    "md": 6,
-                    "lg": 6,
-                    "label": "Abfragezyklus der Kamera",
-                    "help": "in Millisekunden",
-                    "default": 250
+                    "label": "Poll Interval for Sensor  Detection",
+                    "help": "in Milliseconds",
+                    "default": 1000,
+                    "newLine": true
                 }
             }
         }

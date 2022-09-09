@@ -7,9 +7,10 @@ declare global {
 			Hostname: string;
 			Username: string;
             Password: string;
+            PollMD:   boolean;
+            PollAI:   boolean;
             apiRefreshInterval: number;
 		}
-        // declare reolinkApiClient: any;
 	}
 
     // declare let reolinkApiClient:any;
