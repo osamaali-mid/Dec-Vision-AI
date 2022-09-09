@@ -81,7 +81,7 @@
 		"Hostname": "",
 		"Username": "",
         "Password": "",
-        "apiRefreshInterval": "500"
+        "apiRefreshInterval": "1000"
 	},
 	"objects": [],
 	"instanceObjects": [
