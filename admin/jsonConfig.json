@@ -4,7 +4,7 @@
     "items": {
         "_options": {
             "type": "panel",
-            "label": "Kamera",
+            "label": "Webcam",
             "items": {
                 "Hostname": {
                     "type": "text",

@@ -16,14 +16,14 @@ const https = require("https");
 class Reolink810a extends utils.Adapter {
 
     
+    public reolinkApiClient : any = null;
+    private apiConnected    : boolean = false;
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
 			...options,
 			name: 'reolink-810a',
 		});
-
-        
 
 
 		this.on('ready', this.onReady.bind(this));
@@ -33,7 +33,7 @@ class Reolink810a extends utils.Adapter {
 		this.on('unload', this.onUnload.bind(this));
 	}
     
-    public reolinkApiClient : any;
+    
     
 
 	/**
@@ -76,6 +76,23 @@ class Reolink810a extends utils.Adapter {
 				rejectUnauthorized: false,
 			}),
 		});
+
+        this.getDevinfo();
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -133,6 +150,56 @@ class Reolink810a extends utils.Adapter {
 		// result = await this.checkGroupAsync('admin', 'admin');
 		// this.log.info('check group user admin group admin: ' + result);
 	}
+
+
+    private async getDevinfo() {
+
+        if (this.reolinkApiClient) {
+            try {
+                const DevInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetDevInfo&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+                this.log.debug(`camMdStateInfo ${JSON.stringify(DevInfoValues.status)}: ${JSON.stringify(DevInfoValues.data)}`);
+
+                if(DevInfoValues.status === 200){
+                    this.apiConnected = true;
+                    // await this.setStateAsync("Network.Connected", {val: this.apiConnected, ack: true});
+                    const DevValues = DevInfoValues.data[0];
+
+                    /*
+                    await this.setStateAsync("Device.BuildDay", {val: DevValues.value.DevInfo.buildDay, ack: true});
+                    await this.setStateAsync("Device.CfgVer", {val: DevValues.value.DevInfo.cfgVer, ack: true});
+                    await this.setStateAsync("Device.Detail", {val: DevValues.value.DevInfo.detail, ack: true});
+                    await this.setStateAsync("Device.DiskNum", {val: DevValues.value.DevInfo.diskNum, ack: true});
+                    await this.setStateAsync("Device.FirmVer", {val: DevValues.value.DevInfo.firmVer, ack: true});
+                    await this.setStateAsync("Device.Model", {val: DevValues.value.DevInfo.model, ack: true});
+                    await this.setStateAsync("Device.Name", {val: DevValues.value.DevInfo.name, ack: true});
+                    await this.setStateAsync("Device.Serial", {val: DevValues.value.DevInfo.serial, ack: true});
+                    await this.setStateAsync("Device.Wifi", {val: DevValues.value.DevInfo.wifi, ack: true});
+                    */
+                    
+                }
+
+            } catch (error:any) {
+                this.apiConnected = false;
+                await this.setStateAsync("Network.Connected", {val: this.apiConnected, ack: true});
+
+
+                this.log.error(error);
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!

@@ -26,6 +26,8 @@ class Reolink810a extends utils.Adapter {
       ...options,
       name: "reolink-810a"
     });
+    this.reolinkApiClient = null;
+    this.apiConnected = false;
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
@@ -57,6 +59,23 @@ class Reolink810a extends utils.Adapter {
         rejectUnauthorized: false
       })
     });
+    this.getDevinfo();
+  }
+  async getDevinfo() {
+    if (this.reolinkApiClient) {
+      try {
+        const DevInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetDevInfo&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+        this.log.debug(`camMdStateInfo ${JSON.stringify(DevInfoValues.status)}: ${JSON.stringify(DevInfoValues.data)}`);
+        if (DevInfoValues.status === 200) {
+          this.apiConnected = true;
+          const DevValues = DevInfoValues.data[0];
+        }
+      } catch (error) {
+        this.apiConnected = false;
+        await this.setStateAsync("Network.Connected", { val: this.apiConnected, ack: true });
+        this.log.error(error);
+      }
+    }
   }
   onUnload(callback) {
     try {
