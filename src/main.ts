@@ -189,7 +189,7 @@ class Reolink810a extends utils.Adapter {
             type: 'state',
             common: {
                 name: '',
-                type: 'boolean',
+                type: 'number',
                 role: 'value',
                 read: true,
                 write: false
@@ -233,7 +233,7 @@ class Reolink810a extends utils.Adapter {
             type: 'state',
             common: {
                 name: '',
-                type: 'string',
+                type: 'number',
                 role: 'value',
                 read: true,
                 write: false
@@ -603,24 +603,24 @@ class Reolink810a extends utils.Adapter {
     {
         if (this.reolinkApiClient && this.config.PollMD)
         {
-			try
+            try
             {
-				const MdInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetMdState&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
-				// this.log.debug(`camMdStateInfo ${JSON.stringify(MdInfoValues.status)}: ${JSON.stringify(MdInfoValues.data)}`);
+                const MdInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetMdState&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+                // this.log.debug(`camMdStateInfo ${JSON.stringify(MdInfoValues.status)}: ${JSON.stringify(MdInfoValues.data)}`);
 
-				if(MdInfoValues.status === 200)
+                if(MdInfoValues.status === 200)
                 {
-					this.announceOnline();
-					const MdValues = MdInfoValues.data[0];
-					await this.setStateAsync("Sensors.MotionDetected", {val: MdValues.value.state === 1, ack: true});
-				}
-			} catch (error:any)
+                    this.announceOnline();
+                    const MdValues = MdInfoValues.data[0];
+                    await this.setStateAsync("Sensors.MotionDetected", {val: MdValues.value.state === 1, ack: true});
+                }
+            } catch (error:any)
             {
                 this.announceOffline();
                 this.log.error('Unable to retrieve State of MotionDetection from ' + this.config.Hostname + ': ' + error);
             }
-		}
-	}
+        }
+    }
 
 
 
@@ -630,16 +630,16 @@ class Reolink810a extends utils.Adapter {
     {
         if (this.reolinkApiClient && this.config.PollAI)
         {
-			try
+            try
             {
-				const AiInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetAiState&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
-				// this.log.debug(`camAiStateInfo ${JSON.stringify(AiInfoValues.status)}: ${JSON.stringify(AiInfoValues.data)}`);
+                const AiInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetAiState&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+                // this.log.debug(`camAiStateInfo ${JSON.stringify(AiInfoValues.status)}: ${JSON.stringify(AiInfoValues.data)}`);
 
-				if(AiInfoValues.status === 200)
+                if(AiInfoValues.status === 200)
                 {
-					this.announceOnline();
-					const AiValues = AiInfoValues.data[0];
-					await this.setStateAsync("Sensors.DogCat.Detected",   {val: AiValues.value.dog_cat.alarm_state === 1, ack: true});
+                    this.announceOnline();
+                    const AiValues = AiInfoValues.data[0];
+                    await this.setStateAsync("Sensors.DogCat.Detected",   {val: AiValues.value.dog_cat.alarm_state === 1, ack: true});
                     await this.setStateAsync("Sensors.DogCat.Supported",  {val: AiValues.value.dog_cat.support     === 1, ack: true});
                     await this.setStateAsync("Sensors.Face.Detected",     {val: AiValues.value.face.alarm_state    === 1, ack: true});
                     await this.setStateAsync("Sensors.Face.Supported",    {val: AiValues.value.face.support        === 1, ack: true});
@@ -647,14 +647,14 @@ class Reolink810a extends utils.Adapter {
                     await this.setStateAsync("Sensors.People.Supported",  {val: AiValues.value.people.support      === 1, ack: true});
                     await this.setStateAsync("Sensors.Vehicle.Detected",  {val: AiValues.value.vehicle.alarm_state === 1, ack: true});
                     await this.setStateAsync("Sensors.Vehicle.Supported", {val: AiValues.value.vehicle.support     === 1, ack: true});
-				}
-			} catch (error:any)
+                }
+            } catch (error:any)
             {
                 this.announceOffline();
                 this.log.error('Unable to retrieve State of AI-Detection from ' + this.config.Hostname + ': ' + error);
             }
-		}
-	}
+        }
+    }
 
 
 
