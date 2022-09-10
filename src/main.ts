@@ -590,8 +590,8 @@ class Reolink810a extends utils.Adapter {
                 this.announceOffline();
                 this.log.error('Unable to retrieve NetworkInfo from ' + this.config.Hostname + ': ' + error);
             }
-		}
-	}
+        }
+    }
 
 
 
