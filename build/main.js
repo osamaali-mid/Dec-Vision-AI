@@ -164,7 +164,7 @@ class Reolink810a extends utils.Adapter {
       type: "state",
       common: {
         name: "",
-        type: "boolean",
+        type: "number",
         role: "value",
         read: true,
         write: false
@@ -204,7 +204,7 @@ class Reolink810a extends utils.Adapter {
       type: "state",
       common: {
         name: "",
-        type: "string",
+        type: "number",
         role: "value",
         read: true,
         write: false
