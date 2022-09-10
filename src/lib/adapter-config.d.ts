@@ -10,6 +10,7 @@ declare global {
             PollMD:   boolean;
             PollAI:   boolean;
             apiRefreshInterval: number;
+            apiSleepAfterError: number;
 		}
 	}
 

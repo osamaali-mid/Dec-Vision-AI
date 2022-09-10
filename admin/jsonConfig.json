@@ -40,10 +40,19 @@
                 },
                 "apiRefreshInterval": {
                     "type": "number",
-                    "min": 100,
+                    "min": 250,
                     "max": 1200000,
                     "label": "Poll Interval for Sensor  Detection",
-                    "help": "in Milliseconds",
+                    "help": "[Milliseconds]",
+                    "default": 1000,
+                    "newLine": true
+                },
+                "apiSleepAfterError": {
+                    "type": "number",
+                    "min": 2,
+                    "max": 1800,
+                    "label": "Wait x Seconds after Error occured",
+                    "help": "[Seconds]",
                     "default": 1000,
                     "newLine": true
                 }

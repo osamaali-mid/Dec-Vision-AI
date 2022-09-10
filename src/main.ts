@@ -17,11 +17,12 @@ class Reolink810a extends utils.Adapter {
 
     
     private reolinkApiClient : any = null;
-    public pollTimer : any;
-
+    private pollTimer : any;
+    private webcamOnline : boolean = false;
     
 
-	public constructor(options: Partial<utils.AdapterOptions> = {}) {
+	public constructor(options: Partial<utils.AdapterOptions> = {})
+    {
 		super({
 			...options,
 			name: 'reolink-810a',
@@ -65,6 +66,12 @@ class Reolink810a extends utils.Adapter {
 			this.log.error("Refresh Interval for Motion Detection not (yet) set - please check Settings!");
 			return;
 		}
+
+        if (!this.config.apiSleepAfterError) {
+			this.log.error("Sleep Interval (if webcam is offline) not (yet) set - please check Settings!");
+			return;
+		}
+
 
         this.reolinkApiClient = axios.create({
 			baseURL: `https://${this.config.Hostname}`,
@@ -480,13 +487,6 @@ class Reolink810a extends utils.Adapter {
 
         this.getDevinfo();
         this.getLocalLink();
-
-
-
-        if (this.config.PollMD || this.config.PollAI)
-        {
-            this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
-		}
 	}
 
 
@@ -499,37 +499,44 @@ class Reolink810a extends utils.Adapter {
             classInstance.getAiState();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    async checkConnection(classInstance:any)
+    {
+        classInstance.getLocalLink();
+    }
 
 
     async announceOffline()
     {
+        if (this.webcamOnline)
+        {
+            this.webcamOnline = false;
+            clearInterval(this.pollTimer);
+            this.pollTimer = this.setInterval(this.checkConnection, this.config.apiSleepAfterError, this);
+        }
         await this.setStateAsync('info.connection',   {val: false, ack: true});
         await this.setStateAsync("Network.Connected", {val: false, ack: true});
     }
 
     async announceOnline()
     {
+        if (!this.webcamOnline)
+        {
+            this.webcamOnline = true;
+            clearInterval(this.pollTimer);
+            this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
+        }
         await this.setStateAsync('info.connection',   {val: true, ack: true});
         await this.setStateAsync("Network.Connected", {val: true, ack: true});
     }
+
+
+
+
+
+
+
+
+
 
 
     async getDevinfo() {

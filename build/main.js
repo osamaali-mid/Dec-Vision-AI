@@ -27,6 +27,7 @@ class Reolink810a extends utils.Adapter {
       name: "reolink-810a"
     });
     this.reolinkApiClient = null;
+    this.webcamOnline = false;
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("objectChange", this.onObjectChange.bind(this));
@@ -49,6 +50,10 @@ class Reolink810a extends utils.Adapter {
     }
     if (!this.config.apiRefreshInterval) {
       this.log.error("Refresh Interval for Motion Detection not (yet) set - please check Settings!");
+      return;
+    }
+    if (!this.config.apiSleepAfterError) {
+      this.log.error("Sleep Interval (if webcam is offline) not (yet) set - please check Settings!");
       return;
     }
     this.reolinkApiClient = axios.create({
@@ -426,9 +431,6 @@ class Reolink810a extends utils.Adapter {
     });
     this.getDevinfo();
     this.getLocalLink();
-    if (this.config.PollMD || this.config.PollAI) {
-      this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
-    }
   }
   async pollSensors(classInstance) {
     if (classInstance.config.PollMD)
@@ -436,11 +438,24 @@ class Reolink810a extends utils.Adapter {
     if (classInstance.config.PollAI)
       classInstance.getAiState();
   }
+  async checkConnection(classInstance) {
+    classInstance.getLocalLink();
+  }
   async announceOffline() {
+    if (this.webcamOnline) {
+      this.webcamOnline = false;
+      clearInterval(this.pollTimer);
+      this.pollTimer = this.setInterval(this.checkConnection, this.config.apiSleepAfterError, this);
+    }
     await this.setStateAsync("info.connection", { val: false, ack: true });
     await this.setStateAsync("Network.Connected", { val: false, ack: true });
   }
   async announceOnline() {
+    if (!this.webcamOnline) {
+      this.webcamOnline = true;
+      clearInterval(this.pollTimer);
+      this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
+    }
     await this.setStateAsync("info.connection", { val: true, ack: true });
     await this.setStateAsync("Network.Connected", { val: true, ack: true });
   }
