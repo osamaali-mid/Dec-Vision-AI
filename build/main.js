@@ -37,7 +37,7 @@ class Reolink810a extends utils.Adapter {
   }
   async onReady() {
     if (!this.config.Hostname) {
-      this.log.error("Hostname not (yet) set - please check Settings!");
+      this.log.error("Hostname / IP of webcam not (yet) set - please check Settings!");
       return;
     }
     if (!this.config.Username) {
@@ -479,7 +479,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error("Unable to retrieve DeviceInfo from " + this.config.Hostname + ": " + error);
+        this.log.error("Unable to retrieve DeviceInfo from Webcam [" + this.config.Hostname + "]: " + error);
       }
     }
   }
@@ -502,7 +502,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error("Unable to retrieve NetworkInfo from " + this.config.Hostname + ": " + error);
+        this.log.error("Unable to retrieve NetworkInfo from from Webcam [" + this.config.Hostname + "]: " + error);
       }
     }
   }
@@ -517,7 +517,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error("Unable to retrieve State of MotionDetection from " + this.config.Hostname + ": " + error);
+        this.log.error("Unable to retrieve State of MotionDetection Sensor from from Webcam [" + this.config.Hostname + "]: " + error);
       }
     }
   }
@@ -539,7 +539,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error("Unable to retrieve State of AI-Detection from " + this.config.Hostname + ": " + error);
+        this.log.error("Unable to retrieve State of AI-Detection Sensor from from Webcam [" + this.config.Hostname + "]: " + error);
       }
     }
   }
