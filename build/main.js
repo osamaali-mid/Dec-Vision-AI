@@ -36,7 +36,6 @@ class Reolink810a extends utils.Adapter {
     this.on("unload", this.onUnload.bind(this));
   }
   async onReady() {
-    this.announceOffline();
     if (!this.config.Hostname) {
       this.log.error("Hostname not (yet) set - please check Settings!");
       return;
@@ -430,6 +429,7 @@ class Reolink810a extends utils.Adapter {
       },
       native: {}
     });
+    this.announceOffline();
   }
   async pollSensors(classInstance) {
     if (classInstance.config.PollMD)
@@ -479,7 +479,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error(error);
+        this.log.error("Unable to retrieve DeviceInfo from " + this.config.Hostname + ": " + error);
       }
     }
   }
@@ -502,7 +502,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error(error);
+        this.log.error("Unable to retrieve NetworkInfo from " + this.config.Hostname + ": " + error);
       }
     }
   }
@@ -517,7 +517,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error(error);
+        this.log.error("Unable to retrieve State of MotionDetection from " + this.config.Hostname + ": " + error);
       }
     }
   }
@@ -539,7 +539,7 @@ class Reolink810a extends utils.Adapter {
         }
       } catch (error) {
         this.announceOffline();
-        this.log.error(error);
+        this.log.error("Unable to retrieve State of AI-Detection from " + this.config.Hostname + ": " + error);
       }
     }
   }

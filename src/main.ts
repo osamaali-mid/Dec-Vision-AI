@@ -45,8 +45,6 @@ class Reolink810a extends utils.Adapter {
     private async onReady(): Promise<void>
     {
 
-        this.announceOffline();
-
         if (!this.config.Hostname) {
             this.log.error("Hostname not (yet) set - please check Settings!");
             return;
@@ -482,6 +480,9 @@ class Reolink810a extends utils.Adapter {
             native: {},
         });
 
+
+        this.announceOffline();
+
         
 	}
 
@@ -555,7 +556,7 @@ class Reolink810a extends utils.Adapter {
             } catch (error:any)
             {
                 this.announceOffline();
-                this.log.error(error);
+                this.log.error('Unable to retrieve DeviceInfo from ' + this.config.Hostname + ': ' + error);
             }
         }
     }
@@ -565,29 +566,29 @@ class Reolink810a extends utils.Adapter {
     {
         if (this.reolinkApiClient)
         {
-        try
-        {
-				const LinkInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetLocalLink&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
-				// this.log.debug(`LinkInfoValues ${JSON.stringify(LinkInfoValues.status)}: ${JSON.stringify(LinkInfoValues.data)}`);
+            try
+            {
+                const LinkInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetLocalLink&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
+                // this.log.debug(`LinkInfoValues ${JSON.stringify(LinkInfoValues.status)}: ${JSON.stringify(LinkInfoValues.data)}`);
 
-				if(LinkInfoValues.status === 200)
+                if(LinkInfoValues.status === 200)
                 {
-					this.announceOnline();
-					const LinkValues = LinkInfoValues.data[0];
-					await this.setStateAsync("Network.ActiveLink",   {val: LinkValues.value.LocalLink.activeLink,     ack: true});
+                    this.announceOnline();
+                    const LinkValues = LinkInfoValues.data[0];
+                    await this.setStateAsync("Network.ActiveLink",   {val: LinkValues.value.LocalLink.activeLink,     ack: true});
                     await this.setStateAsync("Network.DNS-Auto",     {val: LinkValues.value.LocalLink.dns.auto,       ack: true});
                     await this.setStateAsync("Network.DNS-Server01", {val: LinkValues.value.LocalLink.dns.dns1,       ack: true});
                     await this.setStateAsync("Network.DNS-Server02", {val: LinkValues.value.LocalLink.dns.dns2,       ack: true});
-					await this.setStateAsync("Network.MAC",          {val: LinkValues.value.LocalLink.mac,            ack: true});
-					await this.setStateAsync("Network.Gateway",      {val: LinkValues.value.LocalLink.static.gateway, ack: true});
+                    await this.setStateAsync("Network.MAC",          {val: LinkValues.value.LocalLink.mac,            ack: true});
+                    await this.setStateAsync("Network.Gateway",      {val: LinkValues.value.LocalLink.static.gateway, ack: true});
                     await this.setStateAsync("Network.IP",           {val: LinkValues.value.LocalLink.static.ip,      ack: true});
                     await this.setStateAsync("Network.Mask",         {val: LinkValues.value.LocalLink.static.mask,    ack: true});
-					await this.setStateAsync("Network.Type",         {val: LinkValues.value.LocalLink.type,           ack: true});
-				}
+                    await this.setStateAsync("Network.Type",         {val: LinkValues.value.LocalLink.type,           ack: true});
+                }
 			} catch (error:any)
             {
                 this.announceOffline();
-                this.log.error(error);
+                this.log.error('Unable to retrieve NetworkInfo from ' + this.config.Hostname + ': ' + error);
             }
 		}
 	}
@@ -616,7 +617,7 @@ class Reolink810a extends utils.Adapter {
 			} catch (error:any)
             {
                 this.announceOffline();
-                this.log.error(error);
+                this.log.error('Unable to retrieve State of MotionDetection from ' + this.config.Hostname + ': ' + error);
             }
 		}
 	}
@@ -650,7 +651,7 @@ class Reolink810a extends utils.Adapter {
 			} catch (error:any)
             {
                 this.announceOffline();
-                this.log.error(error);
+                this.log.error('Unable to retrieve State of AI-Detection from ' + this.config.Hostname + ': ' + error);
             }
 		}
 	}
