@@ -18,7 +18,7 @@ class Reolink810a extends utils.Adapter {
     
     private reolinkApiClient : any = null;
     private pollTimer : any;
-    private webcamOnline : boolean = false;
+    private webcamOnline : boolean = true;
     
 
 	public constructor(options: Partial<utils.AdapterOptions> = {})
@@ -539,8 +539,8 @@ class Reolink810a extends utils.Adapter {
 
 
 
-    async getDevinfo() {
-
+    async getDevinfo()
+    {
         if (this.reolinkApiClient)
         {
             try
@@ -574,8 +574,7 @@ class Reolink810a extends utils.Adapter {
 
     async getLocalLink()
     {
-
-		if (this.reolinkApiClient)
+        if (this.reolinkApiClient)
         {
 			try
             {
@@ -612,7 +611,7 @@ class Reolink810a extends utils.Adapter {
 
     async getMdState()
     {
-		if (this.reolinkApiClient && this.config.PollMD)
+        if (this.reolinkApiClient && this.config.PollMD)
         {
 			try
             {
@@ -639,7 +638,7 @@ class Reolink810a extends utils.Adapter {
 
     async getAiState()
     {
-		if (this.reolinkApiClient && this.config.PollAI)
+        if (this.reolinkApiClient && this.config.PollAI)
         {
 			try
             {
