@@ -482,11 +482,7 @@ class Reolink810a extends utils.Adapter {
             native: {},
         });
 
-
-
-
-        this.getDevinfo();
-        this.getLocalLink();
+        
 	}
 
 
@@ -524,6 +520,8 @@ class Reolink810a extends utils.Adapter {
             this.webcamOnline = true;
             clearInterval(this.pollTimer);
             this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
+            this.getDevinfo();
+            this.getLocalLink();
         }
         await this.setStateAsync('info.connection',   {val: true, ack: true});
         await this.setStateAsync("Network.Connected", {val: true, ack: true});
@@ -567,8 +565,8 @@ class Reolink810a extends utils.Adapter {
     {
         if (this.reolinkApiClient)
         {
-			try
-            {
+        try
+        {
 				const LinkInfoValues = await this.reolinkApiClient.get(`/api.cgi?cmd=GetLocalLink&channel=0&user=${this.config.Username}&password=${this.config.Password}`);
 				// this.log.debug(`LinkInfoValues ${JSON.stringify(LinkInfoValues.status)}: ${JSON.stringify(LinkInfoValues.data)}`);
 

@@ -430,8 +430,6 @@ class Reolink810a extends utils.Adapter {
       },
       native: {}
     });
-    this.getDevinfo();
-    this.getLocalLink();
   }
   async pollSensors(classInstance) {
     if (classInstance.config.PollMD)
@@ -456,6 +454,8 @@ class Reolink810a extends utils.Adapter {
       this.webcamOnline = true;
       clearInterval(this.pollTimer);
       this.pollTimer = this.setInterval(this.pollSensors, this.config.apiRefreshInterval, this);
+      this.getDevinfo();
+      this.getLocalLink();
     }
     await this.setStateAsync("info.connection", { val: true, ack: true });
     await this.setStateAsync("Network.Connected", { val: true, ack: true });

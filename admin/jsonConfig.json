@@ -56,7 +56,7 @@
                     "max": 1800,
                     "label": "If webcam is offline, sleep x seconds and try again",
                     "help": "[Seconds]",
-                    "default": 10,
+                    "default": 30,
                     "newLine": true,
                     "sm": 6,
                     "md": 6,
