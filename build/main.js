@@ -27,7 +27,8 @@ class Reolink810a extends utils.Adapter {
       name: "reolink-810a"
     });
     this.reolinkApiClient = null;
-    this.webcamOnline = true;
+    this.pollTimer = null;
+    this.webcamOnline = false;
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("objectChange", this.onObjectChange.bind(this));
@@ -442,10 +443,10 @@ class Reolink810a extends utils.Adapter {
     classInstance.getLocalLink();
   }
   async announceOffline() {
-    if (this.webcamOnline) {
+    if (this.webcamOnline || this.pollTimer === null) {
       this.webcamOnline = false;
       clearInterval(this.pollTimer);
-      this.pollTimer = this.setInterval(this.checkConnection, this.config.apiSleepAfterError, this);
+      this.pollTimer = this.setInterval(this.checkConnection, this.config.apiSleepAfterError * 1e3, this);
     }
     await this.setStateAsync("info.connection", { val: false, ack: true });
     await this.setStateAsync("Network.Connected", { val: false, ack: true });

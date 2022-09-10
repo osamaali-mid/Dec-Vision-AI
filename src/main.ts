@@ -16,9 +16,9 @@ const https = require("https");
 class Reolink810a extends utils.Adapter {
 
     
-    private reolinkApiClient : any = null;
-    private pollTimer : any;
-    private webcamOnline : boolean = true;
+    private reolinkApiClient : any     = null;
+    private pollTimer        : any     = null;
+    private webcamOnline     : boolean = false;
     
 
     public constructor(options: Partial<utils.AdapterOptions> = {})
@@ -507,11 +507,11 @@ class Reolink810a extends utils.Adapter {
 
     async announceOffline()
     {
-        if (this.webcamOnline)
+        if (this.webcamOnline || this.pollTimer === null)
         {
             this.webcamOnline = false;
             clearInterval(this.pollTimer);
-            this.pollTimer = this.setInterval(this.checkConnection, this.config.apiSleepAfterError, this);
+            this.pollTimer = this.setInterval(this.checkConnection, this.config.apiSleepAfterError * 1000, this);
         }
         await this.setStateAsync('info.connection',   {val: false, ack: true});
         await this.setStateAsync("Network.Connected", {val: false, ack: true});
