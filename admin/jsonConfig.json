@@ -45,7 +45,10 @@
                     "label": "Poll Interval for Sensor  Detection",
                     "help": "[Milliseconds]",
                     "default": 1000,
-                    "newLine": true
+                    "newLine": true,
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 6
                 },
                 "apiSleepAfterError": {
                     "type": "number",
@@ -53,8 +56,11 @@
                     "max": 1800,
                     "label": "If webcam is offline, sleep x seconds and try again",
                     "help": "[Seconds]",
-                    "default": 10000,
-                    "newLine": true
+                    "default": 10,
+                    "newLine": true,
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 6
                 }
             }
         }
