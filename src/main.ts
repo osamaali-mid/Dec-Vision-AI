@@ -21,19 +21,19 @@ class Reolink810a extends utils.Adapter {
     private webcamOnline : boolean = true;
     
 
-	public constructor(options: Partial<utils.AdapterOptions> = {})
+    public constructor(options: Partial<utils.AdapterOptions> = {})
     {
-		super({
-			...options,
-			name: 'reolink-810a',
-		});
+        super({
+            ...options,
+            name: 'reolink-810a',
+        });
 
 
-		this.on('ready', this.onReady.bind(this));
-		this.on('stateChange', this.onStateChange.bind(this));
-		this.on('objectChange', this.onObjectChange.bind(this));
-		this.on('message', this.onMessage.bind(this));
-		this.on('unload', this.onUnload.bind(this));
+        this.on('ready', this.onReady.bind(this));
+        this.on('stateChange', this.onStateChange.bind(this));
+        this.on('objectChange', this.onObjectChange.bind(this));
+        this.on('message', this.onMessage.bind(this));
+        this.on('unload', this.onUnload.bind(this));
 	}
     
     
@@ -42,448 +42,448 @@ class Reolink810a extends utils.Adapter {
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
-	private async onReady(): Promise<void>
+    private async onReady(): Promise<void>
     {
 
         this.announceOffline();
 
         if (!this.config.Hostname) {
-			this.log.error("Hostname not (yet) set - please check Settings!");
-			return;
-		}
+            this.log.error("Hostname not (yet) set - please check Settings!");
+            return;
+        }
 
         if (!this.config.Username) {
-			this.log.error("Username not (yet) set - please check Settings!");
-			return;
-		}
+            this.log.error("Username not (yet) set - please check Settings!");
+            return;
+        }
 
         if (!this.config.Password) {
-			this.log.error("Password not (yet) set - please check Settings!");
-			return;
-		}
+            this.log.error("Password not (yet) set - please check Settings!");
+            return;
+        }
 
         if (!this.config.apiRefreshInterval) {
-			this.log.error("Refresh Interval for Motion Detection not (yet) set - please check Settings!");
-			return;
-		}
+            this.log.error("Refresh Interval for Motion Detection not (yet) set - please check Settings!");
+            return;
+        }
 
         if (!this.config.apiSleepAfterError) {
-			this.log.error("Sleep Interval (if webcam is offline) not (yet) set - please check Settings!");
-			return;
-		}
+            this.log.error("Sleep Interval (if webcam is offline) not (yet) set - please check Settings!");
+            return;
+        }
 
 
         this.reolinkApiClient = axios.create({
-			baseURL: `https://${this.config.Hostname}`,
-			timeout: 4000,
-			responseType: "json",
-			responseEncoding: "binary",
-			httpsAgent: new https.Agent({
-				rejectUnauthorized: false,
-			}),
-		});
+            baseURL: `https://${this.config.Hostname}`,
+            timeout: 4000,
+            responseType: "json",
+            responseEncoding: "binary",
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false,
+            }),
+        });
 
         await this.setObjectNotExistsAsync('Device', {
-			type: 'channel',
-			common: {
-				name: '',
-			},
-			native: {},
-		});
+            type: 'channel',
+            common: {
+                name: '',
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.Model', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.BuildDay', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.CfgVer', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.Detail', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.DiskNum', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'number',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'number',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.FirmVer', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.Name', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.Serial', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Device.Wifi', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network', {
-			type: 'channel',
-			common: {
-				name: '',
-			},
-			native: {},
-		});
+            type: 'channel',
+            common: {
+                name: '',
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.ActiveLink', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.Connected', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.DNS-Auto', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.DNS-Server01', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false,
                 def: ""
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.DNS-Server02', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false,
                 def: ""
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.MAC', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false,
                 def: ""
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.Gateway', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false,
                 def: ""
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.IP', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false,
                 def: ""
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.Mask', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false,
                 def: ""
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Network.Type', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'string',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'string',
+                role: 'value',
+                read: true,
                 write: false,
                 def: ""
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors', {
-			type: 'channel',
-			common: {
-				name: '',
-			},
-			native: {},
-		});
+            type: 'channel',
+            common: {
+                name: '',
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.MotionDetected', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.DogCat', {
-			type: 'channel',
-			common: {
-				name: '',
-			},
-			native: {},
-		});
+            type: 'channel',
+            common: {
+                name: '',
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.DogCat.Detected', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.DogCat.Supported', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.Face', {
-			type: 'channel',
-			common: {
-				name: '',
-			},
-			native: {},
-		});
+            type: 'channel',
+            common: {
+                name: '',
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.Face.Detected', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.Face.Supported', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.People', {
-			type: 'channel',
-			common: {
-				name: '',
-			},
-			native: {},
-		});
+            type: 'channel',
+            common: {
+                name: '',
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.People.Detected', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.People.Supported', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.Vehicle', {
-			type: 'channel',
-			common: {
-				name: '',
-			},
-			native: {},
-		});
+            type: 'channel',
+            common: {
+                name: '',
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.Vehicle.Detected', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
         await this.setObjectNotExistsAsync('Sensors.Vehicle.Supported', {
-			type: 'state',
-			common: {
-				name: '',
-				type: 'boolean',
-				role: 'value',
-				read: true,
+            type: 'state',
+            common: {
+                name: '',
+                type: 'boolean',
+                role: 'value',
+                read: true,
                 write: false
-			},
-			native: {},
-		});
+            },
+            native: {},
+        });
 
 
-        
+
 
         this.getDevinfo();
         this.getLocalLink();
@@ -528,15 +528,6 @@ class Reolink810a extends utils.Adapter {
         await this.setStateAsync('info.connection',   {val: true, ack: true});
         await this.setStateAsync("Network.Connected", {val: true, ack: true});
     }
-
-
-
-
-
-
-
-
-
 
 
     async getDevinfo()
