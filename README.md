@@ -97,9 +97,11 @@ The ioBroker.admin interface will then be available at http://localhost:8081/
 Please refer to the [`dev-server` documentation](https://github.com/ioBroker/dev-server#command-line) for more details.
 
 ## Changelog
-
-
-**WORK IN PROGRESS**
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### **WORK IN PROGRESS**
+-->
+### **WORK IN PROGRESS**
 Changed behavior if webcam is offline
 
 ### 0.0.2 (2022-09-09)
