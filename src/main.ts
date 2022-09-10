@@ -585,7 +585,7 @@ class Reolink810a extends utils.Adapter {
                     await this.setStateAsync("Network.Mask",         {val: LinkValues.value.LocalLink.static.mask,    ack: true});
                     await this.setStateAsync("Network.Type",         {val: LinkValues.value.LocalLink.type,           ack: true});
                 }
-			} catch (error:any)
+            } catch (error:any)
             {
                 this.announceOffline();
                 this.log.error('Unable to retrieve NetworkInfo from ' + this.config.Hostname + ': ' + error);
