@@ -3,8 +3,10 @@
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.reolink-810a.svg)](https://www.npmjs.com/package/iobroker.reolink-810a)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.reolink-810a.svg)](https://www.npmjs.com/package/iobroker.reolink-810a)
+<!--
 ![Number of Installations](https://iobroker.live/badges/reolink-810a-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/reolink-810a-stable.svg)
+-->
 
 [![NPM](https://nodei.co/npm/iobroker.reolink-810a.png?downloads=true)](https://nodei.co/npm/iobroker.reolink-810a/)
 
