@@ -23,7 +23,7 @@ Using extended capabilities of Motion and People Detection that Reolink-RLC810A 
 	### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 0.0.4 (2022-09-16)
 * First official release
 
 ### 0.0.3 (2022-09-10)

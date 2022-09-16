@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "reolink-810a",
-        "version": "0.0.3",
+        "version": "0.0.4",
         "news": {
+            "0.0.4": {
+                "en": "First official release",
+                "de": "Erste offizielle Veröffentlichung",
+                "ru": "Первый официальный релиз",
+                "pt": "Primeira versão oficial",
+                "nl": "Eerste vrijlating",
+                "fr": "Premier communiqué officiel",
+                "it": "Primo rilascio ufficiale",
+                "es": "Primera publicación oficial",
+                "pl": "Pierwsze oficjalne wydanie",
+                "zh-cn": "首次正式释放"
+            },
             "0.0.3": {
                 "en": "Changed behavior if webcam is offline",
                 "de": "Verändertes Verhalten, wenn Webcam offline ist",
