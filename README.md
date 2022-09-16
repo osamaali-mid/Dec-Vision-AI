@@ -22,6 +22,10 @@ Using extended capabilities of Motion and People Detection that Reolink-RLC810A 
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* First official release
+
 ### 0.0.3 (2022-09-10)
 Changed behavior if webcam is offline
 
