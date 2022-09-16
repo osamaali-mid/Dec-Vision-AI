@@ -58,9 +58,11 @@
         ],
         "keywords": [
             "ioBroker",
-            "template",
-            "Smart Home",
-            "home automation"
+            "reolink",
+            "reolink-api",
+            "reolink-camera",
+            "people-detection",
+            "video-surveillance"
         ],
         "license": "MIT",
         "platform": "Javascript/Node.js",
