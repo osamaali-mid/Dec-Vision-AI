@@ -56,7 +56,6 @@ class Reolink810a extends utils.Adapter {
             enableVideoDetection: true,
             enableWebcamDetection: true,
             detectionThreshold: 0.7,
-            supportedFormats: ['.jpg', '.jpeg', '.png', '.mp4', '.avi', '.mov'],
             maxFileSize: 100 // MB
         };
         
