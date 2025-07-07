@@ -11,6 +11,12 @@ declare global {
             PollAI:   boolean;
             apiRefreshInterval: number;
             apiSleepAfterError: number;
+            enableImageDetection: boolean;
+            enableVideoDetection: boolean;
+            enableWebcamDetection: boolean;
+            detectionThreshold: number;
+            maxFileSize: number;
+            cleanupDays: number;
 		}
 	}
 

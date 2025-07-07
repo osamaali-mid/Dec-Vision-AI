@@ -63,6 +63,58 @@
                     "lg": 6
                 }
             }
+        },
+        "_DetectionSettings": {
+            "type": "panel",
+            "label": "Detection Settings",
+            "items": {
+                "enableImageDetection": {
+                    "type": "checkbox",
+                    "label": "Enable Image Detection",
+                    "newLine": true,
+                    "default": true
+                },
+                "enableVideoDetection": {
+                    "type": "checkbox",
+                    "label": "Enable Video Detection",
+                    "newLine": true,
+                    "default": true
+                },
+                "enableWebcamDetection": {
+                    "type": "checkbox",
+                    "label": "Enable Webcam Detection",
+                    "newLine": true,
+                    "default": true
+                },
+                "detectionThreshold": {
+                    "type": "number",
+                    "min": 0.1,
+                    "max": 1.0,
+                    "step": 0.1,
+                    "label": "Detection Confidence Threshold",
+                    "help": "Minimum confidence level for detections (0.1 - 1.0)",
+                    "default": 0.7,
+                    "newLine": true
+                },
+                "maxFileSize": {
+                    "type": "number",
+                    "min": 1,
+                    "max": 500,
+                    "label": "Maximum File Size (MB)",
+                    "help": "Maximum allowed file size for uploads",
+                    "default": 100,
+                    "newLine": true
+                },
+                "cleanupDays": {
+                    "type": "number",
+                    "min": 1,
+                    "max": 365,
+                    "label": "Auto-cleanup files older than (days)",
+                    "help": "Automatically delete uploaded files older than specified days",
+                    "default": 7,
+                    "newLine": true
+                }
+            }
         }
     }
 }

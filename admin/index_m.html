@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reolink 810A Detection Interface</title>
+    
+    <!-- Material Design CSS -->
+    <link rel="stylesheet" href="../../lib/css/materialize.css">
+    <link rel="stylesheet" href="../../lib/css/adapter.css">
+    
+    <style>
+        .detection-interface {
+            margin-top: 20px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #2196F3;
+        }
+        
+        .upload-area.dragover {
+            border-color: #4CAF50;
+            background-color: #f0f8ff;
+        }
+        
+        .detection-results {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .webcam-controls {
+            margin: 20px 0;
+        }
+        
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .detection-card {
+            margin: 10px 0;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s;
+        }
+        
+        .webcam-preview {
+            width: 100%;
+            max-width: 640px;
+            height: 480px;
+            background-color: #000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background-color: #4CAF50;
+        }
+        
+        .status-offline {
+            background-color: #f44336;
+        }
+        
+        .status-processing {
+            background-color: #FF9800;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="m adapter-container">
+        <div class="row">
+            <div class="col s12">
+                <h4>Reolink 810A Detection Interface</h4>
+                
+                <!-- Status Section -->
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">System Status</span>
+                        <div class="row">
+                            <div class="col s12 m4">
+                                <p><span id="camera-status" class="status-indicator status-offline"></span>Camera Status: <span id="camera-status-text">Offline</span></p>
+                            </div>
+                            <div class="col s12 m4">
+                                <p><span id="detection-status" class="status-indicator status-offline"></span>Detection: <span id="detection-status-text">Stopped</span></p>
+                            </div>
+                            <div class="col s12 m4">
+                                <p>Total Detections: <span id="total-detections">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- File Upload Section -->
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">File Upload & Detection</span>
+                        
+                        <div class="upload-area" id="upload-area">
+                            <i class="material-icons large">cloud_upload</i>
+                            <p>Drag & drop files here or click to select</p>
+                            <p class="grey-text">Supported formats: JPG, PNG, MP4, AVI, MOV (Max: 100MB)</p>
+                            <input type="file" id="file-input" style="display: none;" accept=".jpg,.jpeg,.png,.mp4,.avi,.mov" multiple>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <button class="btn waves-effect waves-light" id="process-images-btn" disabled>
+                                    <i class="material-icons left">image</i>Process Images
+                                </button>
+                            </div>
+                            <div class="col s12 m6">
+                                <button class="btn waves-effect waves-light" id="process-videos-btn" disabled>
+                                    <i class="material-icons left">videocam</i>Process Videos
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Uploaded Files List -->
+                        <div class="file-list" id="file-list">
+                            <h6>Uploaded Files</h6>
+                            <div id="uploaded-files-container">
+                                <p class="grey-text">No files uploaded yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Webcam Detection Section -->
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Webcam Detection</span>
+                        
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <div class="input-field">
+                                    <select id="webcam-select">
+                                        <option value="" disabled selected>Select a camera</option>
+                                    </select>
+                                    <label>Available Cameras</label>
+                                </div>
+                            </div>
+                            <div class="col s12 m6">
+                                <div class="webcam-controls">
+                                    <button class="btn waves-effect waves-light green" id="start-webcam-btn">
+                                        <i class="material-icons left">play_arrow</i>Start Detection
+                                    </button>
+                                    <button class="btn waves-effect waves-light red" id="stop-webcam-btn" disabled>
+                                        <i class="material-icons left">stop</i>Stop Detection
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="webcam-preview" id="webcam-preview">
+                            <span>Webcam preview will appear here</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detection Results Section -->
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Detection Results</span>
+                        <div class="detection-results" id="detection-results">
+                            <p class="grey-text">No detections yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../lib/js/jquery-3.2.1.min.js"></script>
+    <script src="../../lib/js/materialize.js"></script>
+    <script src="../../js/adapter-settings.js"></script>
+    
+    <script>
+        let socket;
+        let uploadedFiles = [];
+        let detectionResults = [];
+        let isWebcamActive = false;
+        
+        // Initialize when document is ready
+        $(document).ready(function() {
+            // Initialize Materialize components
+            $('select').formSelect();
+            
+            // Setup event handlers
+            setupEventHandlers();
+            
+            // Load initial data
+            loadWebcamDevices();
+            loadUploadedFiles();
+            updateStatus();
+            
+            // Setup periodic status updates
+            setInterval(updateStatus, 5000);
+        });
+        
+        function setupEventHandlers() {
+            // File upload handlers
+            $('#upload-area').on('click', function() {
+                $('#file-input').click();
+            });
+            
+            $('#file-input').on('change', function(e) {
+                handleFileSelection(e.target.files);
+            });
+            
+            // Drag and drop handlers
+            $('#upload-area').on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('dragover');
+            });
+            
+            $('#upload-area').on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+            });
+            
+            $('#upload-area').on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+                handleFileSelection(e.originalEvent.dataTransfer.files);
+            });
+            
+            // Processing buttons
+            $('#process-images-btn').on('click', processImages);
+            $('#process-videos-btn').on('click', processVideos);
+            
+            // Webcam controls
+            $('#start-webcam-btn').on('click', startWebcamDetection);
+            $('#stop-webcam-btn').on('click', stopWebcamDetection);
+        }
+        
+        function handleFileSelection(files) {
+            for (let file of files) {
+                uploadFile(file);
+            }
+        }
+        
+        function uploadFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileData = e.target.result.split(',')[1]; // Remove data URL prefix
+                
+                // Send file to adapter
+                sendTo(null, 'uploadFile', {
+                    fileName: file.name,
+                    fileData: fileData
+                }, function(result) {
+                    if (result.success) {
+                        M.toast({html: `File "${file.name}" uploaded successfully!`, classes: 'green'});
+                        loadUploadedFiles();
+                        updateProcessButtons();
+                    } else {
+                        M.toast({html: `Upload failed: ${result.error}`, classes: 'red'});
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function processImages() {
+            const imageFiles = uploadedFiles.filter(f => f.type === 'image');
+            
+            if (imageFiles.length === 0) {
+                M.toast({html: 'No image files to process', classes: 'orange'});
+                return;
+            }
+            
+            $('#process-images-btn').prop('disabled', true);
+            updateDetectionStatus('processing');
+            
+            let processed = 0;
+            imageFiles.forEach(file => {
+                sendTo(null, 'processImage', {
+                    imagePath: file.path
+                }, function(result) {
+                    processed++;
+                    
+                    if (result.success) {
+                        addDetectionResults(result.results, 'image', file.name);
+                    } else {
+                        M.toast({html: `Processing failed for ${file.name}: ${result.error}`, classes: 'red'});
+                    }
+                    
+                    if (processed === imageFiles.length) {
+                        $('#process-images-btn').prop('disabled', false);
+                        updateDetectionStatus('stopped');
+                        M.toast({html: `Processed ${imageFiles.length} images`, classes: 'green'});
+                    }
+                });
+            });
+        }
+        
+        function processVideos() {
+            const videoFiles = uploadedFiles.filter(f => f.type === 'video');
+            
+            if (videoFiles.length === 0) {
+                M.toast({html: 'No video files to process', classes: 'orange'});
+                return;
+            }
+            
+            $('#process-videos-btn').prop('disabled', true);
+            updateDetectionStatus('processing');
+            
+            let processed = 0;
+            videoFiles.forEach(file => {
+                sendTo(null, 'processVideo', {
+                    videoPath: file.path
+                }, function(result) {
+                    processed++;
+                    
+                    if (result.success) {
+                        addDetectionResults(result.results, 'video', file.name);
+                    } else {
+                        M.toast({html: `Processing failed for ${file.name}: ${result.error}`, classes: 'red'});
+                    }
+                    
+                    if (processed === videoFiles.length) {
+                        $('#process-videos-btn').prop('disabled', false);
+                        updateDetectionStatus('stopped');
+                        M.toast({html: `Processed ${videoFiles.length} videos`, classes: 'green'});
+                    }
+                });
+            });
+        }
+        
+        function startWebcamDetection() {
+            const deviceId = $('#webcam-select').val();
+            
+            if (!deviceId) {
+                M.toast({html: 'Please select a camera first', classes: 'orange'});
+                return;
+            }
+            
+            sendTo(null, 'startWebcamDetection', {
+                deviceId: deviceId
+            }, function(result) {
+                if (result.success) {
+                    isWebcamActive = true;
+                    $('#start-webcam-btn').prop('disabled', true);
+                    $('#stop-webcam-btn').prop('disabled', false);
+                    updateDetectionStatus('active');
+                    $('#webcam-preview').html('<span>Webcam detection active...</span>');
+                    M.toast({html: 'Webcam detection started', classes: 'green'});
+                } else {
+                    M.toast({html: `Failed to start webcam: ${result.error}`, classes: 'red'});
+                }
+            });
+        }
+        
+        function stopWebcamDetection() {
+            sendTo(null, 'stopWebcamDetection', {}, function(result) {
+                if (result.success) {
+                    isWebcamActive = false;
+                    $('#start-webcam-btn').prop('disabled', false);
+                    $('#stop-webcam-btn').prop('disabled', true);
+                    updateDetectionStatus('stopped');
+                    $('#webcam-preview').html('<span>Webcam preview will appear here</span>');
+                    M.toast({html: 'Webcam detection stopped', classes: 'blue'});
+                } else {
+                    M.toast({html: `Failed to stop webcam: ${result.error}`, classes: 'red'});
+                }
+            });
+        }
+        
+        function loadWebcamDevices() {
+            sendTo(null, 'getWebcamDevices', {}, function(result) {
+                if (result.success) {
+                    const select = $('#webcam-select');
+                    select.empty();
+                    select.append('<option value="" disabled selected>Select a camera</option>');
+                    
+                    result.devices.forEach(device => {
+                        select.append(`<option value="${device.id}">${device.name}</option>`);
+                    });
+                    
+                    $('select').formSelect();
+                }
+            });
+        }
+        
+        function loadUploadedFiles() {
+            sendTo(null, 'getUploadedFiles', {}, function(result) {
+                if (result.success) {
+                    uploadedFiles = result.files;
+                    displayUploadedFiles();
+                    updateProcessButtons();
+                }
+            });
+        }
+        
+        function displayUploadedFiles() {
+            const container = $('#uploaded-files-container');
+            
+            if (uploadedFiles.length === 0) {
+                container.html('<p class="grey-text">No files uploaded yet</p>');
+                return;
+            }
+            
+            let html = '';
+            uploadedFiles.forEach(file => {
+                const icon = file.type === 'image' ? 'image' : 'videocam';
+                const size = (file.size / (1024 * 1024)).toFixed(2);
+                
+                html += `
+                    <div class="chip">
+                        <i class="material-icons left">${icon}</i>
+                        ${file.name} (${size} MB)
+                    </div>
+                `;
+            });
+            
+            container.html(html);
+        }
+        
+        function updateProcessButtons() {
+            const hasImages = uploadedFiles.some(f => f.type === 'image');
+            const hasVideos = uploadedFiles.some(f => f.type === 'video');
+            
+            $('#process-images-btn').prop('disabled', !hasImages);
+            $('#process-videos-btn').prop('disabled', !hasVideos);
+        }
+        
+        function addDetectionResults(results, source, fileName) {
+            const container = $('#detection-results');
+            
+            if (container.find('.grey-text').length > 0) {
+                container.empty();
+            }
+            
+            results.forEach(result => {
+                const confidence = Math.round(result.confidence * 100);
+                const timestamp = new Date(result.timestamp).toLocaleString();
+                
+                const html = `
+                    <div class="detection-card card-panel">
+                        <div class="row valign-wrapper">
+                            <div class="col s2">
+                                <i class="material-icons medium">${getDetectionIcon(result.type)}</i>
+                            </div>
+                            <div class="col s10">
+                                <h6>${result.type.charAt(0).toUpperCase() + result.type.slice(1)} Detected</h6>
+                                <p>Source: ${source} (${fileName})</p>
+                                <p>Confidence: ${confidence}%</p>
+                                <p>Time: ${timestamp}</p>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${confidence}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.prepend(html);
+            });
+            
+            detectionResults.push(...results);
+            updateTotalDetections();
+        }
+        
+        function getDetectionIcon(type) {
+            const icons = {
+                'motion': 'directions_run',
+                'person': 'person',
+                'vehicle': 'directions_car',
+                'face': 'face',
+                'dog_cat': 'pets'
+            };
+            return icons[type] || 'visibility';
+        }
+        
+        function updateStatus() {
+            // Update camera status (this would come from the adapter states)
+            getState('info.connection', function(err, state) {
+                if (state && state.val) {
+                    $('#camera-status').removeClass('status-offline').addClass('status-online');
+                    $('#camera-status-text').text('Online');
+                } else {
+                    $('#camera-status').removeClass('status-online').addClass('status-offline');
+                    $('#camera-status-text').text('Offline');
+                }
+            });
+        }
+        
+        function updateDetectionStatus(status) {
+            const statusElement = $('#detection-status');
+            const textElement = $('#detection-status-text');
+            
+            statusElement.removeClass('status-online status-offline status-processing');
+            
+            switch (status) {
+                case 'active':
+                    statusElement.addClass('status-online');
+                    textElement.text('Active');
+                    break;
+                case 'processing':
+                    statusElement.addClass('status-processing');
+                    textElement.text('Processing');
+                    break;
+                default:
+                    statusElement.addClass('status-offline');
+                    textElement.text('Stopped');
+            }
+        }
+        
+        function updateTotalDetections() {
+            $('#total-detections').text(detectionResults.length);
+        }
+        
+        // Helper function to send messages to adapter
+        function sendTo(instance, command, message, callback) {
+            if (typeof socket !== 'undefined' && socket) {
+                socket.emit('sendTo', instance || common.instance, command, message, callback);
+            } else {
+                // Fallback for testing
+                console.log('Socket not available, command:', command, 'message:', message);
+                if (callback) callback({ success: false, error: 'Socket not available' });
+            }
+        }
+        
+        // Helper function to get state
+        function getState(id, callback) {
+            if (typeof socket !== 'undefined' && socket) {
+                socket.emit('getState', id, callback);
+            } else {
+                console.log('Socket not available, getting state:', id);
+                if (callback) callback(null, { val: false });
+            }
+        }
+    </script>
+</body>
+</html>

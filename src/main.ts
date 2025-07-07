@@ -7,6 +7,10 @@
 import * as utils from '@iobroker/adapter-core';
 const axios = require("axios").default;
 const https = require("https");
+import { DetectionService, DetectionConfig, DetectionResult } from './lib/detection-service';
+import { FileManager, FileUploadResult } from './lib/file-manager';
+import { WebcamManager, WebcamDevice } from './lib/webcam-manager';
+import * as path from 'path';
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -19,6 +23,9 @@ class Reolink810a extends utils.Adapter {
     private reolinkApiClient : any     = null;
     private pollTimer        : any     = null;
     private webcamOnline     : boolean = false;
+    private detectionService : DetectionService | null = null;
+    private fileManager      : FileManager | null = null;
+    private webcamManager    : WebcamManager | null = null;
     
 
     public constructor(options: Partial<utils.AdapterOptions> = {})
@@ -34,8 +41,80 @@ class Reolink810a extends utils.Adapter {
         this.on('objectChange', this.onObjectChange.bind(this));
         this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
+
+        // Initialize detection services
+        this.initializeDetectionServices();
 	}
     
+    /**
+     * Initialize detection services
+     */
+    private initializeDetectionServices(): void {
+        // Initialize detection service
+        const detectionConfig: DetectionConfig = {
+            enableImageDetection: true,
+            enableVideoDetection: true,
+            enableWebcamDetection: true,
+            detectionThreshold: 0.7,
+            supportedFormats: ['.jpg', '.jpeg', '.png', '.mp4', '.avi', '.mov'],
+            maxFileSize: 100 // MB
+        };
+        
+        this.detectionService = new DetectionService(detectionConfig);
+        
+        // Initialize file manager
+        const uploadDir = path.join(__dirname, '..', 'uploads');
+        this.fileManager = new FileManager(uploadDir, 100 * 1024 * 1024); // 100MB
+        
+        // Initialize webcam manager
+        this.webcamManager = new WebcamManager();
+        
+        this.setupDetectionEventHandlers();
+    }
+
+    /**
+     * Setup event handlers for detection services
+     */
+    private setupDetectionEventHandlers(): void {
+        if (!this.detectionService || !this.fileManager || !this.webcamManager) return;
+
+        // Detection service events
+        this.detectionService.on('detectionComplete', (data) => {
+            this.log.info(`Detection completed for ${data.type}: ${data.results.length} objects detected`);
+            this.updateDetectionStates(data.results);
+        });
+
+        this.detectionService.on('webcamDetection', (data) => {
+            this.log.debug(`Webcam detection: ${data.results.length} objects detected`);
+            this.updateDetectionStates(data.results);
+        });
+
+        this.detectionService.on('error', (error) => {
+            this.log.error(`Detection service error: ${error}`);
+        });
+
+        // File manager events
+        this.fileManager.on('fileUploaded', (data) => {
+            this.log.info(`File uploaded: ${data.fileInfo.name}`);
+        });
+
+        this.fileManager.on('error', (error) => {
+            this.log.error(`File manager error: ${error}`);
+        });
+
+        // Webcam manager events
+        this.webcamManager.on('streamStarted', (data) => {
+            this.log.info(`Webcam stream started: ${data.deviceId}`);
+        });
+
+        this.webcamManager.on('streamStopped', (data) => {
+            this.log.info(`Webcam stream stopped: ${data.deviceId}`);
+        });
+
+        this.webcamManager.on('error', (data) => {
+            this.log.error(`Webcam manager error for device ${data.deviceId}: ${data.error}`);
+        });
+    }
     
     
 
@@ -480,6 +559,146 @@ class Reolink810a extends utils.Adapter {
             native: {},
         });
 
+        // Detection service states
+        await this.setObjectNotExistsAsync('Detection', {
+            type: 'channel',
+            common: {
+                name: 'Detection Services',
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('Detection.ImageDetection', {
+            type: 'state',
+            common: {
+                name: 'Image Detection Enabled',
+                type: 'boolean',
+                role: 'switch',
+                read: true,
+                write: true,
+                def: true
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('Detection.VideoDetection', {
+            type: 'state',
+            common: {
+                name: 'Video Detection Enabled',
+                type: 'boolean',
+                role: 'switch',
+                read: true,
+                write: true,
+                def: true
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('Detection.WebcamDetection', {
+            type: 'state',
+            common: {
+                name: 'Webcam Detection Enabled',
+                type: 'boolean',
+                role: 'switch',
+                read: true,
+                write: true,
+                def: true
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('Detection.LastDetectionTime', {
+            type: 'state',
+            common: {
+                name: 'Last Detection Time',
+                type: 'string',
+                role: 'value.time',
+                read: true,
+                write: false
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('Detection.DetectionCount', {
+            type: 'state',
+            common: {
+                name: 'Total Detection Count',
+                type: 'number',
+                role: 'value',
+                read: true,
+                write: false,
+                def: 0
+            },
+            native: {},
+        });
+
+        // File upload states
+        await this.setObjectNotExistsAsync('FileUpload', {
+            type: 'channel',
+            common: {
+                name: 'File Upload',
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('FileUpload.LastUploadedFile', {
+            type: 'state',
+            common: {
+                name: 'Last Uploaded File',
+                type: 'string',
+                role: 'value',
+                read: true,
+                write: false
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('FileUpload.UploadCount', {
+            type: 'state',
+            common: {
+                name: 'Upload Count',
+                type: 'number',
+                role: 'value',
+                read: true,
+                write: false,
+                def: 0
+            },
+            native: {},
+        });
+
+        // Webcam states
+        await this.setObjectNotExistsAsync('Webcam', {
+            type: 'channel',
+            common: {
+                name: 'Webcam Management',
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('Webcam.ActiveStreams', {
+            type: 'state',
+            common: {
+                name: 'Active Streams Count',
+                type: 'number',
+                role: 'value',
+                read: true,
+                write: false,
+                def: 0
+            },
+            native: {},
+        });
+
+        await this.setObjectNotExistsAsync('Webcam.AvailableDevices', {
+            type: 'state',
+            common: {
+                name: 'Available Devices',
+                type: 'string',
+                role: 'json',
+                read: true,
+                write: false
+            },
+            native: {},
+        });
 
         this.announceOffline();
 
@@ -656,7 +875,61 @@ class Reolink810a extends utils.Adapter {
         }
     }
 
+    /**
+     * Update detection states based on results
+     */
+    private async updateDetectionStates(results: DetectionResult[]): Promise<void> {
+        if (results.length > 0) {
+            await this.setStateAsync('Detection.LastDetectionTime', { 
+                val: new Date().toISOString(), 
+                ack: true 
+            });
 
+            // Update detection count
+            const currentCount = await this.getStateAsync('Detection.DetectionCount');
+            const newCount = (currentCount?.val as number || 0) + results.length;
+            await this.setStateAsync('Detection.DetectionCount', { 
+                val: newCount, 
+                ack: true 
+            });
+
+            // Update specific sensor states based on detection results
+            for (const result of results) {
+                switch (result.type) {
+                    case 'motion':
+                        await this.setStateAsync('Sensors.MotionDetected', { 
+                            val: true, 
+                            ack: true 
+                        });
+                        break;
+                    case 'person':
+                        await this.setStateAsync('Sensors.People.Detected', { 
+                            val: true, 
+                            ack: true 
+                        });
+                        break;
+                    case 'vehicle':
+                        await this.setStateAsync('Sensors.Vehicle.Detected', { 
+                            val: true, 
+                            ack: true 
+                        });
+                        break;
+                    case 'face':
+                        await this.setStateAsync('Sensors.Face.Detected', { 
+                            val: true, 
+                            ack: true 
+                        });
+                        break;
+                    case 'dog_cat':
+                        await this.setStateAsync('Sensors.DogCat.Detected', { 
+                            val: true, 
+                            ack: true 
+                        });
+                        break;
+                }
+            }
+        }
+    }
 
     
 
@@ -684,6 +957,16 @@ class Reolink810a extends utils.Adapter {
         {
             this.announceOffline();
             clearInterval(this.pollTimer);
+            
+            // Cleanup detection services
+            if (this.detectionService) {
+                this.detectionService.stopWebcamDetection();
+            }
+            
+            if (this.webcamManager) {
+                this.webcamManager.cleanup();
+            }
+            
 			callback();
 		} catch (e) {
 			callback();
@@ -725,15 +1008,276 @@ class Reolink810a extends utils.Adapter {
 	//  */
 	private onMessage(obj: ioBroker.Message): void {
 		if (typeof obj === 'object' && obj.message) {
-			if (obj.command === 'send') {
-				// e.g. send email or pushover or whatever
-				this.log.info('send command');
-
-				// Send response in callback if required
-				if (obj.callback) this.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-			}
+			switch (obj.command) {
+                case 'uploadFile':
+                    this.handleFileUpload(obj);
+                    break;
+                case 'processImage':
+                    this.handleImageProcessing(obj);
+                    break;
+                case 'processVideo':
+                    this.handleVideoProcessing(obj);
+                    break;
+                case 'startWebcamDetection':
+                    this.handleWebcamDetection(obj);
+                    break;
+                case 'stopWebcamDetection':
+                    this.handleStopWebcamDetection(obj);
+                    break;
+                case 'getWebcamDevices':
+                    this.handleGetWebcamDevices(obj);
+                    break;
+                case 'getUploadedFiles':
+                    this.handleGetUploadedFiles(obj);
+                    break;
+                default:
+                    if (obj.command === 'send') {
+                        this.log.info('send command');
+                        if (obj.callback) {
+                            this.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+                        }
+                    }
+                    break;
+            }
 		}
 	}
+
+    /**
+     * Handle file upload message
+     */
+    private async handleFileUpload(obj: ioBroker.Message): Promise<void> {
+        try {
+            if (!this.fileManager) {
+                throw new Error('File manager not initialized');
+            }
+
+            const { fileName, fileData } = obj.message as { fileName: string; fileData: string };
+            const fileBuffer = Buffer.from(fileData, 'base64');
+            
+            const result = await this.fileManager.saveFile(fileName, fileBuffer);
+            
+            if (result.success && result.fileInfo) {
+                await this.setStateAsync('FileUpload.LastUploadedFile', { 
+                    val: result.fileInfo.name, 
+                    ack: true 
+                });
+                
+                const currentCount = await this.getStateAsync('FileUpload.UploadCount');
+                const newCount = (currentCount?.val as number || 0) + 1;
+                await this.setStateAsync('FileUpload.UploadCount', { 
+                    val: newCount, 
+                    ack: true 
+                });
+            }
+
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, result, obj.callback);
+            }
+        } catch (error) {
+            const errorResult = {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, errorResult, obj.callback);
+            }
+        }
+    }
+
+    /**
+     * Handle image processing message
+     */
+    private async handleImageProcessing(obj: ioBroker.Message): Promise<void> {
+        try {
+            if (!this.detectionService) {
+                throw new Error('Detection service not initialized');
+            }
+
+            const { imagePath } = obj.message as { imagePath: string };
+            const results = await this.detectionService.processImage(imagePath);
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { success: true, results }, obj.callback);
+            }
+        } catch (error) {
+            const errorResult = {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, errorResult, obj.callback);
+            }
+        }
+    }
+
+    /**
+     * Handle video processing message
+     */
+    private async handleVideoProcessing(obj: ioBroker.Message): Promise<void> {
+        try {
+            if (!this.detectionService) {
+                throw new Error('Detection service not initialized');
+            }
+
+            const { videoPath } = obj.message as { videoPath: string };
+            const results = await this.detectionService.processVideo(videoPath);
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { success: true, results }, obj.callback);
+            }
+        } catch (error) {
+            const errorResult = {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, errorResult, obj.callback);
+            }
+        }
+    }
+
+    /**
+     * Handle webcam detection start message
+     */
+    private async handleWebcamDetection(obj: ioBroker.Message): Promise<void> {
+        try {
+            if (!this.detectionService || !this.webcamManager) {
+                throw new Error('Detection services not initialized');
+            }
+
+            const { deviceId } = obj.message as { deviceId?: string };
+            
+            // Start webcam stream
+            await this.webcamManager.startStream(deviceId || '0');
+            
+            // Start detection
+            await this.detectionService.startWebcamDetection(deviceId);
+            
+            // Update active streams count
+            const activeStreams = this.webcamManager.getActiveStreams();
+            await this.setStateAsync('Webcam.ActiveStreams', { 
+                val: activeStreams.length, 
+                ack: true 
+            });
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { success: true }, obj.callback);
+            }
+        } catch (error) {
+            const errorResult = {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, errorResult, obj.callback);
+            }
+        }
+    }
+
+    /**
+     * Handle webcam detection stop message
+     */
+    private async handleStopWebcamDetection(obj: ioBroker.Message): Promise<void> {
+        try {
+            if (!this.detectionService || !this.webcamManager) {
+                throw new Error('Detection services not initialized');
+            }
+
+            const { deviceId } = obj.message as { deviceId?: string };
+            
+            // Stop detection
+            this.detectionService.stopWebcamDetection();
+            
+            // Stop webcam stream
+            if (deviceId) {
+                await this.webcamManager.stopStream(deviceId);
+            } else {
+                await this.webcamManager.stopAllStreams();
+            }
+            
+            // Update active streams count
+            const activeStreams = this.webcamManager.getActiveStreams();
+            await this.setStateAsync('Webcam.ActiveStreams', { 
+                val: activeStreams.length, 
+                ack: true 
+            });
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { success: true }, obj.callback);
+            }
+        } catch (error) {
+            const errorResult = {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, errorResult, obj.callback);
+            }
+        }
+    }
+
+    /**
+     * Handle get webcam devices message
+     */
+    private async handleGetWebcamDevices(obj: ioBroker.Message): Promise<void> {
+        try {
+            if (!this.webcamManager) {
+                throw new Error('Webcam manager not initialized');
+            }
+
+            const devices = await this.webcamManager.getAvailableDevices();
+            
+            // Update available devices state
+            await this.setStateAsync('Webcam.AvailableDevices', { 
+                val: JSON.stringify(devices), 
+                ack: true 
+            });
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { success: true, devices }, obj.callback);
+            }
+        } catch (error) {
+            const errorResult = {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, errorResult, obj.callback);
+            }
+        }
+    }
+
+    /**
+     * Handle get uploaded files message
+     */
+    private async handleGetUploadedFiles(obj: ioBroker.Message): Promise<void> {
+        try {
+            if (!this.fileManager) {
+                throw new Error('File manager not initialized');
+            }
+
+            const files = await this.fileManager.getUploadedFiles();
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, { success: true, files }, obj.callback);
+            }
+        } catch (error) {
+            const errorResult = {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            };
+            
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, errorResult, obj.callback);
+            }
+        }
+    }
 
 }
 
@@ -744,6 +1288,3 @@ if (require.main !== module) {
 	// otherwise start the instance directly
 	(() => new Reolink810a())();
 }
-
-
-
