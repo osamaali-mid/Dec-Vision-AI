@@ -5,8 +5,8 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
-const axios = require("axios").default;
-const https = require("https");
+import axios from 'axios';
+import * as https from 'https';
 import { DetectionService, DetectionConfig, DetectionResult } from './lib/detection-service';
 import { FileManager, FileUploadResult } from './lib/file-manager';
 import { WebcamManager, WebcamDevice } from './lib/webcam-manager';
